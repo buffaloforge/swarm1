@@ -1,4 +1,4 @@
 com/example/ApplicationConfig.class
-org/jboss/as/quickstarts/helloworld/hello.class
 com/example/GreetingResource.class
+hello.class
 com/example/Greeting.class
