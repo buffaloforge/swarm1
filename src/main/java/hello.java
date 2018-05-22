@@ -1,4 +1,3 @@
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -70,7 +69,7 @@ public class hello extends HttpServlet
 		try
 		{
 
-			checkPasswdAD("uid=jmn45,ou=Engineering,dc=example,dc=org", "doh098");
+			checkPasswdAD("uid=jmn45,ou=Engineering,dc=example,dc=org", "doh098",response);
 
 			String sSearchPath = "ou=Engineering,dc=example,dc=org";
 			String searchfilter = "ou=Engineering";
