@@ -42,7 +42,7 @@ public class hello extends HttpServlet
 			throws ServletException, IOException
 	{
 		// TODO Auto-generated method stub
-		response.getWriter().print("apples");
+		response.getWriter().print("noapples");
 		String sHost = "ldap://" +"172.30.20.149"+":389";
 
 		try{		
