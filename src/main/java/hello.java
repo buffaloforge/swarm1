@@ -178,7 +178,7 @@ static void printUserAttrs(Attributes attrs, HttpServletResponse response) throw
 public static void checkPasswdAD(String sOu, String sPassword,HttpServletResponse response,String sHost) throws Exception
 {
 	// sOu =
-	// "CN=Sylvester.Braswell,OU=OQPS Users,OU=OQPS,DC=Health1,DC=HCOM,DC=Health,DC=State,DC=NY,DC=US";
+	// "";
 	try
 	{
 		Hashtable htEnvinm = new Hashtable<String, String>(11);
