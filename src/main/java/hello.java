@@ -1,4 +1,17 @@
+
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Hashtable;
+
+import javax.naming.Context;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -9,30 +22,173 @@ import javax.servlet.http.HttpServletResponse;
  * Servlet implementation class hello
  */
 @WebServlet("/hello")
-public class hello extends HttpServlet {
+public class hello extends HttpServlet
+{
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public hello() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#HttpServlet()
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().print("apples1");
+	public hello()
+	{
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException
+	{
 		// TODO Auto-generated method stub
+		response.getWriter().print("apples");
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException
+	{
+		// TODO Auto-generated method stub
+	}
+
+	public void getOrgnization(HttpServletResponse response)
+	{
+		// TODO Auto-generated method stub
+		Hashtable env = new Hashtable(11);
+		env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+		env.put(Context.PROVIDER_URL, "ldap://localhost:389");
+		env.put(Context.SECURITY_AUTHENTICATION, "simple");
+		env.put(Context.SECURITY_PRINCIPAL, "cn=admin,dc=example,dc=org");
+		env.put(Context.SECURITY_CREDENTIALS, "admin");
+
+		try
+		{
+
+			checkPasswdAD("uid=jmn45,ou=Engineering,dc=example,dc=org", "doh098");
+
+			String sSearchPath = "ou=Engineering,dc=example,dc=org";
+			String searchfilter = "ou=Engineering";
+			DirContext ctx11 = new InitialDirContext(env);
+			SearchControls searchControls = new SearchControls();
+
+			searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+			searchControls.setCountLimit(10);
+
+			// pull information about the group
+			NamingEnumeration<SearchResult> namingEnumeration = ctx11.search(sSearchPath,
+					searchfilter, new Object[]
+					{}, searchControls);
+			// pull information about the user
+			Attributes answer = ctx11.getAttributes("uid=jmn45,ou=Engineering,dc=example,dc=org");
+			printUserAttrs(answer,response);
+
+			String sKey = "";
+			String sValue = "";
+			HashMap hashMap = new HashMap();
+			while (namingEnumeration.hasMoreElements())
+			{
+				SearchResult sr = (SearchResult) namingEnumeration.next();
+				Attributes attributes = sr.getAttributes();
+				System.out.println(sr.getName());
+				// logger.info(attributes.getAll());
+
+				NamingEnumeration neAllAttr = attributes.getAll();
+				sKey = "";
+				sValue = "";
+				while (neAllAttr.hasMore())
+				{
+					// grab the key
+					Attribute attr = (Attribute) neAllAttr.next();
+					sKey = attr.getID();
+
+					// grab the value
+					NamingEnumeration neValues = attr.getAll();
+					while (neValues.hasMore())
+						sValue = (String) neValues.next();
+					hashMap.put(sKey, sValue);
+				}
+			}
+
+			response.getWriter().print("orginzation output");
+			response.getWriter().print(hashMap);
+
+			while (namingEnumeration.hasMore())
+			{
+				SearchResult sr = namingEnumeration.next();
+				System.out.println("DN: " + sr.getName());
+				System.out.println(sr.getAttributes().get("uid"));
+				// System.out.println("Password:" + new String((byte[])
+				// sr.getAttributes().get("userPassword").get()));
+
+			}
+			ctx11.close();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+	}
+
+	static void printUserAttrs(Attributes attrs, HttpServletResponse response) throws Exception
+	{
+		if (attrs == null)
+		{
+			response.getWriter().print("user attributes");
+		}
+		else
+		{
+			/* Print each attribute */
+			try
+			{response.getWriter().print("User attributes");
+				for (NamingEnumeration ae = attrs.getAll(); ae.hasMore();)
+				{
+					Attribute attr = (Attribute) ae.next();
+					response.getWriter().print("attribute: " + attr.getID());
+
+					/* print each value */
+					for (NamingEnumeration e = attr.getAll(); e.hasMore(); response.getWriter()
+							.print("value: " + e.next()))
+						;
+
+				}
+			}
+			catch (NamingException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static void checkPasswdAD(String sOu, String sPassword) throws Exception
+	{
+		// sOu =
+		// "CN=Sylvester.Braswell,OU=OQPS Users,OU=OQPS,DC=Health1,DC=HCOM,DC=Health,DC=State,DC=NY,DC=US";
+		try
+		{
+			Hashtable htEnvinm = new Hashtable<String, String>(11);
+			DirContext ctx = null;
+			// logger.info("ou ::: " + (String) hashMap.get("ou"));
+			htEnvinm.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+			// htEnvinm.put(Context.PROVIDER_URL, "ldap://ldap1:389");
+			htEnvinm.put(Context.SECURITY_AUTHENTICATION, "simple");
+			htEnvinm.put(Context.SECURITY_PRINCIPAL, sOu);
+			htEnvinm.put(Context.SECURITY_CREDENTIALS, sPassword);
+			htEnvinm.put(Context.PROVIDER_URL, "ldap://localhost:389");
+
+			ctx = new InitialDirContext(htEnvinm);
+			ctx.close();
+			System.out.println("successful access");
+		}
+		catch (Exception e)
+		{
+			throw new Exception("Failed to bind with user credentials: " + e.toString());
+		}
 	}
 
 }
