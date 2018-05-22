@@ -193,7 +193,7 @@ public static void checkPasswdAD(String sOu, String sPassword,HttpServletRespons
 
 		ctx = new InitialDirContext(htEnvinm);
 		ctx.close();
-		response.getWriter().print("successful password");
+		response.getWriter().print("successfuld password");
 	}
 	catch (Exception e)
 	{
