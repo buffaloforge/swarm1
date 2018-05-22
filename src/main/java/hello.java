@@ -44,6 +44,7 @@ public class hello extends HttpServlet
 	{
 		// TODO Auto-generated method stub
 		response.getWriter().print("apples");
+		getOrgnization(response);
 	}
 
 	/**
@@ -165,7 +166,7 @@ public class hello extends HttpServlet
 		}
 	}
 
-	public static void checkPasswdAD(String sOu, String sPassword) throws Exception
+	public static void checkPasswdAD(String sOu, String sPassword,HttpServletResponse response) throws Exception
 	{
 		// sOu =
 		// "CN=Sylvester.Braswell,OU=OQPS Users,OU=OQPS,DC=Health1,DC=HCOM,DC=Health,DC=State,DC=NY,DC=US";
@@ -183,7 +184,7 @@ public class hello extends HttpServlet
 
 			ctx = new InitialDirContext(htEnvinm);
 			ctx.close();
-			System.out.println("successful access");
+			response.getWriter().print("successful password");
 		}
 		catch (Exception e)
 		{
