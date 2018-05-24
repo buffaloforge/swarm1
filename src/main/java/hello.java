@@ -46,7 +46,7 @@ public class hello extends HttpServlet
 		String sHost = "ldap://" +"172.30.20.149"+":389";
 
 		try{		
-			getOrgnization(response,sHost);
+			//getOrgnization(response,sHost);
 		}
 		catch(Exception e)
 		{
